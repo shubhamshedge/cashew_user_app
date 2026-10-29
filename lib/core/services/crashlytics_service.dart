@@ -3,6 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 
+import '../config/env_config.dart';
+
 /// Centralized Firebase Crashlytics service for crash reporting, fatal & non-fatal errors,
 /// breadcrumb logging, and user diagnostics.
 class CrashlyticsService {
@@ -16,14 +18,19 @@ class CrashlyticsService {
   /// Initializes Crashlytics and hooks Flutter/Platform uncaught error handlers.
   static Future<void> initialize() async {
     try {
+      if (!EnvConfig.enableCrashlytics) {
+        debugPrint('ℹ️ Crashlytics collection disabled via .env');
+        return;
+      }
+
       if (Firebase.apps.isEmpty) {
         await Firebase.initializeApp();
       }
 
       final crashlytics = FirebaseCrashlytics.instance;
 
-      // Enable Crashlytics collection (enabled for all release & debug builds by default)
-      await crashlytics.setCrashlyticsCollectionEnabled(true);
+      // Enable Crashlytics collection based on environment flag
+      await crashlytics.setCrashlyticsCollectionEnabled(EnvConfig.enableCrashlytics);
 
       // Pass all uncaught "fatal" errors from the Flutter framework to Crashlytics
       FlutterError.onError = (FlutterErrorDetails details) {
