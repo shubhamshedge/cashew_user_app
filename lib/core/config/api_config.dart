@@ -1,17 +1,8 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart';
+import 'env_config.dart';
 
 class ApiConfig {
-  static String get baseUrl {
-    if (kIsWeb) {
-      return 'http://localhost:3000/api/v1';
-    } else if (Platform.isAndroid) {
-      return 'http://10.0.2.2:3000/api/v1';
-    } else {
-      return 'http://localhost:3000/api/v1';
-    }
-  }
+  static String get baseUrl => EnvConfig.apiBaseUrl;
 
-  static const Duration connectionTimeout = Duration(seconds: 15);
-  static const Duration receiveTimeout = Duration(seconds: 15);
+  static Duration get connectionTimeout => Duration(seconds: EnvConfig.apiTimeoutSeconds);
+  static Duration get receiveTimeout => Duration(seconds: EnvConfig.apiTimeoutSeconds);
 }
